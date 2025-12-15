@@ -106,6 +106,7 @@ def shaped_mask_attack(
     lambda_attack,
     lambda_agg,
     verbose=False,
+    seg_mask=None,
 ):
     X_ori = torch.stack([trans(img)]).to(device)
     X_ori = F.interpolate(X_ori, (inputsize[0], inputsize[1]), mode="bilinear", align_corners=False)
@@ -151,6 +152,12 @@ def shaped_mask_attack(
 
         # STE 二值化
         mask_pad_binary = (mask_pad > 0.5).float()
+        if seg_mask is not None:
+            try:
+                mask_pad_binary = mask_pad_binary * seg_mask
+            except Exception:
+                pass
+
         mask_pad_for_attack = (mask_pad_binary - mask_pad.detach()) + mask_pad
 
         X_adv_b = X_ori * (1 - mask_pad_for_attack) + content * mask_pad_for_attack
@@ -173,8 +180,8 @@ def shaped_mask_attack(
         loss_agg_final = loss_agg * lambda_agg
         total_loss = loss_attack_final + loss_sparse_final + loss_agg_final
 
-        # 追踪最佳loss结果
-        if total_loss.item() < best_total and loss_attack.item() < 0.5:
+        # 追踪最佳 total loss（不再受 attack 阈值限制）
+        if total_loss.item() < best_total:
             best_total = total_loss.item()
             best_mask = mask.detach().clone()
             best_iter = itr
@@ -224,23 +231,27 @@ def shaped_mask_attack(
 
     final_threshold = 0.5
     mask_pad_binary = (mask_pad > final_threshold).float()
+    if seg_mask is not None:
+        try:
+            mask_pad_binary = mask_pad_binary * seg_mask
+        except Exception:
+            pass
+
     X_adv = X_ori * (1 - mask_pad_binary) + mask_pad_binary * content
 
     adv_final = (X_adv[0].detach().cpu().numpy() * 255).astype(np.uint8)
     adv_img = Image.fromarray(np.transpose(adv_final, (1, 2, 0)))
-    # 生成mask
-    mask_extrude_binary = (mask_extrude > final_threshold).float()
 
-    mask_img_numpy = (mask_extrude_binary[0][0].detach().cpu().numpy() * 255).astype(np.uint8)
+    # 生成与应用一致的 416x416 掩码图（即参与合成的 mask_pad_binary）
+    mask_img_numpy = (mask_pad_binary[0][0].detach().cpu().numpy() * 255).astype(np.uint8)
     mask_img = Image.fromarray(mask_img_numpy)
 
     if verbose and losses:
-
-        final_total_loss = losses[best_iter]["loss_total"]
         start_total_loss = losses[0]["loss_total"]
+        select_total_loss = losses[best_iter]["loss_total"]
         print(
             f"\nLoss summary: best {best_total:.6f} @ iter {best_iter}, "
-            f"final {final_total_loss:.6f}, start {start_total_loss:.6f}"
+            f"select {select_total_loss:.6f}, start {start_total_loss:.6f}"
         )
 
     return X_adv.detach().cpu(), adv_img, mask_img
