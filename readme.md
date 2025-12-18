@@ -64,7 +64,7 @@ pip install -r "infrared_patch/mycode/requirements.txt"
 -
 - 运行目录建议切换到 `infrared_patch/mycode`，因为脚本使用相对路径加载权重与数据。
 - 默认数据目录为 `mydata/`（脚本会遍历该目录中的样本）。
-- 配置参数（如补丁尺寸、迭代次数、遮盖率等）由 `config.py`（或相应脚本内的 `Config` 类）管理；运行前可修改以适配场景。
+- 配置参数（如补丁尺寸、迭代次数、遮盖率等）由脚本内的 `Config` 类管理；运行前可修改以适配场景。
 
 注意事项与常见问题
 -
