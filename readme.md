@@ -9,15 +9,14 @@
 模型权重下载地址: https://drive.google.com/file/d/1qvcQGhs20eU6DGgQqtGctVXgfJspKa2V/view?usp=sharing
 
 快速指南
--
-- **入口**: 请使用 `main.py` 启动默认攻击流程；使用 `new_attack.py` 可运行替代的优化/损失实现。示例：
+- 首先下载权重文件，放在项目根目录下
+- **入口**: 请使用 `main.py` 启动默认攻击流程；`main.py`使用 `new_attack.py` 可运行替代的优化/损失实现。示例：
 
 ```bash
-cd "infrared_patch/mycode"
 python main.py
 ```
 
-- **输出**: 运行后结果会保存在 `res/<timestamp>/` 下，包含 `adv_imgs/`（对抗图像）和 `infrared_masks/`（补丁二值图）。
+- **输出**: 攻击前的测试图片文件放在`mydata`目录下，运行后结果会保存在 `res/<timestamp>/` 下，包含 `adv_imgs/`（对抗图像）和 `infrared_masks/`（补丁二值图）。
 
 
 目录与关键文件说明
@@ -53,11 +52,11 @@ conda activate irpatch
 2. 安装依赖：
 
 ```bash
-pip install -r "infrared_patch/mycode/requirements.txt"
+pip install -r "requirements.txt"
 ```
 
 3. 确保模型权重文件 `best.pt` 可用，并放在项目期望的位置：
-- 常见位置：`infrared_patch/mycode/best.pt`。
+- 常见位置：`项目目录/best.pt`。
 
 
 运行与配置要点
@@ -73,9 +72,6 @@ pip install -r "infrared_patch/mycode/requirements.txt"
 - 补丁与像素值: `content` 参数控制热图强度（值为 0 表示热源较暗/冷，根据热图语义可能需要反向理解）。
 
 
-输出说明
--
-- 成功攻击后，`res/<timestamp>/adv_imgs/` 下会保存对抗图，`res/<timestamp>/infrared_masks/` 下会保存 8-bit 灰度补丁掩码（binary）。
 
 
 
