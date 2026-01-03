@@ -38,7 +38,7 @@ python main.py
 - 推荐 Python 3.8+。
 - PyTorch >= 1.7（建议与 CUDA 匹配的官方版本以使用 GPU 加速）。
 - 其他 Python 包请参考仓库中的依赖文件：
-- 本目录专用依赖：`infrared_patch/mycode/requirements.txt`
+- 本目录专用依赖：`requirements.txt`
 
 安装步骤（示例）
 -
@@ -61,7 +61,6 @@ pip install -r "requirements.txt"
 
 运行与配置要点
 -
-- 运行目录建议切换到 `infrared_patch/mycode`，因为脚本使用相对路径加载权重与数据。
 - 默认数据目录为 `mydata/`（脚本会遍历该目录中的样本）。
 - 配置参数（如补丁尺寸、迭代次数、遮盖率等）由脚本内的 `Config` 类管理；运行前可修改以适配场景。
 
